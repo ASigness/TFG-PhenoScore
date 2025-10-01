@@ -1,0 +1,146 @@
+\chapter{Conclusiones}
+\label{chap:conclusiones}
+
+Este capítulo final permite realizar una síntesis de los objetivos obtenidos, el logro de los objetivos, la reflexión sobre los desafíos durante el proceso y los esfuerzos de aprendizaje. El propósito es presentar resultados y reflexiones de manera clara y crítica para este trabajo final.
+
+\section{Respuesta a las Preguntas de Investigación}
+
+Este capítulo final presenta una síntesis del trabajo realizado, evaluando los hallazgos del proyecto a través de las preguntas de investigación planteadas en la metodología. El propósito es demostrar de manera clara y crítica cómo el proceso de diseño, desarrollo y validación ha dado respuesta a cada una de estas cuestiones.
+
+\subsection{Fase 1: Investigación del Problema}
+
+La primera fase del proyecto buscaba establecer las bases teóricas y contextuales. Las preguntas de investigación asociadas eran:
+
+\begin{itemize}
+    \item \textit{¿Cuál es la base de genética que sustentan los análisis PRS?}
+    \item \textit{¿Qué herramientas tecnológicas dan soporte a la ejecución de análisis PRS?}
+    \item \textit{¿Cuáles son las principales barreras y limitaciones que enfrentan los usuarios de estas herramientas tecnológicas?}
+\end{itemize}
+
+El Capítulo 2 ha respondido a estas preguntas de forma exhaustiva. Se ha determinado que los análisis PRS se fundamentan en los resultados de los estudios \textit{GWAS}, que identifican variantes genéticas (SNPs) asociadas a enfermedades y cuantifican su efecto. El análisis del estado del arte reveló que, si bien existen herramientas potentes como \textit{pgs\_calc} o \textit{GenoPred}, su principal barrera es la alta complejidad técnica, su dependencia de la línea de comandos (\textit{CLI}) y la fragmentación del flujo de trabajo. Esta investigación confirmó la necesidad de una solución integrada y usable para usuarios no expertos en bioinformática.
+
+\subsection{Fase 2: Diseño de la Solución}
+
+La segunda fase se centró en definir la solución técnica. Las preguntas de investigación eran:
+
+\begin{itemize}
+    \item \textit{¿Qué requisitos debe cumplir una plataforma web para superar las barreras identificadas y facilitar el análisis PRS?}
+    \item \textit{¿Cuál es la arquitectura tecnológica más adecuada para esta plataforma?}
+    \item \textit{¿Cómo optimizar la carga, procesamiento y análisis de modelos PRS?}
+\end{itemize}
+
+El Capítulo 3 da respuesta a estas cuestiones a través del diseño de \textit{PhenoScore}. Se definieron requisitos funcionales centrados en la usabilidad y la abstracción de la complejidad (ej. HU05: Subida de archivos mediante una interfaz gráfica). Se diseñó una arquitectura por capas (Presentación, Lógica de Negocio, Datos) para garantizar la mantenibilidad y escalabilidad. Para optimizar la carga de los análisis, se propuso una arquitectura asíncrona basada en una cola de trabajos, que permite ejecutar procesos computacionalmente intensivos en segundo plano sin bloquear la interfaz de usuario, respondiendo así al reto del rendimiento.
+
+\subsection{Fase 3: Validación de la Solución}
+
+La fase final buscaba evaluar la idoneidad y el éxito de la plataforma implementada. Las preguntas de investigación eran:
+
+\begin{itemize}
+    \item \textit{¿En qué medida la plataforma desarrollada cumple con los requisitos establecidos para superar las barreras identificadas?}
+    \item \textit{¿Cuál es el nivel de usabilidad y utilidad percibida por los usuarios finales al interactuar con la plataforma?}
+\end{itemize}
+
+El Capítulo 4 responde a estas preguntas a través de un meticuloso proceso de validación. Los resultados demuestran que \textit{PhenoScore} cumple plenamente con los requisitos funcionales, ya que el 100\% de los usuarios completó con éxito todas las tareas clave. El nivel de usabilidad y utilidad percibida, medido tanto cualitativamente (tiempos de tarea) como cuantitativamente (Modelo de Aceptación Tecnológica), fue muy alto. Es especialmente relevante que el perfil de usuario no técnico pudiera utilizar la herramienta de forma autónoma, lo que confirma que la plataforma supera con éxito la barrera de accesibilidad que motivó el proyecto. La alta puntuación en las escalas de Facilidad de Uso y Utilidad Percibida del \textit{TAM} refuerza esta conclusión.
+
+\section{Desafíos y soluciones del desarrollo}
+Durante la fase de implementación, surgieron varios desafíos técnicos, algunos de los cuales tuvieron que ser superados con un análisis y toma de decisiones sustanciales para garantizar el éxito del proyecto.
+
+\begin{itemize}
+    \item \textbf{Problema de Entorno y Compatibilidad:} El obstáculo más significativo fue la inestabilidad encontrada al intentar ejecutar el \textit{pipeline} de \textit{GenoPred} en el Subsistema de \textit{Windows} para \textit{Linux (WSL)}. Se lanzó una actualización de la herramienta externa introdujo cambios que rompían la compatibilidad y causaban errores fatales.
+    \newline
+    \textbf{Solución:} La arquitectura de despliegue completa se migró a una máquina virtual ejecutada en \textit{Google Cloud Platform} con un sistema operativo \textit{Linux} nativo. Fue un gran esfuerzo de reconfiguración, pero se logró un entorno de ejecución sólido, predecible y escalable, que es fundamental para una aplicación de estas características.
+    
+    \item \textbf{Dependencia de Software Externo:} Tras la migración, los análisis seguían fallando debido a un \textit{bug} introducido en la nueva versión de \textit{GenoPred}. La depuración de este problema fue compleja, ya que la causa se encontraba en código de terceros.
+        \newline
+        \textbf{Solución:} Resolver este problema fue posible después de una investigación proactiva que incluyó el análisis de \textit{logs}, la revisión de la documentación y, finalmente, el contacto directo con el desarrollador principal de la herramienta. Su colaboración fue clave para identificar y corregir el \textit{bug}, lo que permitió desbloquear el desarrollo. En general, fue un buen ejemplo de comunicación en proyectos que dependen en gran medida del software de código abierto.
+        
+    \item \textbf{Limitación de la Concurrencia:} Durante la validación, se identificó que la herramienta subyacente, \textit{Snakemake}, no permite ejecuciones concurrentes en el mismo directorio de proyecto \cite{snakemake}.
+        \newline
+        \textbf{Solución (Conceptual):} Aunque no se implementó por estar fuera del alcance del TFG, se identificó la solución técnica necesaria: aislar la ejecución de cada trabajo, por ejemplo, creando una copia dinámica actualizada del proyecto para cada análisis. Este análisis demuestra una comprensión del problema y establece una línea clara para trabajo futuro.
+    
+\end{itemize}
+
+En cuanto a los errores cometidos, una posible mejora habría sido realizar un análisis técnico más detallado de las dependencias externas (\textit{GenoPred/Snakemake}) en una fase más temprana del diseño. Una prueba de concepto inicial sobre la concurrencia probablemente haber revelado la limitación de \textit{Snakemake} antes, lo que habría permitido preparar una solución a tiempo.
+
+\section{Aprendizaje}
+
+La realización de este Trabajo de Fin de Grado ha aportado una valiosa oportunidad de aprendizaje, tanto desde el punto de vista técnico como personal. 
+
+En términos profesionales, el proyecto brinda la oportunidad de aplicar y profundizar en una amplia variedad de competencias relacionadas con la ingeniería del software. Uno de los aspectos más destacados ha sido el diseño de una arquitectura de software compleja y moderna, que implica la implementación de un sistema asíncrono basado en colas de mensajes, un desafío técnico mucho mayor en comparación con una aplicación web común. La necesidad de integrar y depurar herramientas bioinformáticas existentes ha proporcionado una valiosa experiencia en la adopción e identificación de dependencias y resolución de problemas en un entorno real.
+
+Como conclusión personal, creo que el aprendizaje más significativo ha sido la gestión de la incertidumbre y la resiliencia. Lidiar con dificultades paralizantes de las que yo no era responsable directa, como el \textit{bug} en \textit{GenoPred}, me ha enseñado la importancia de la paciencia, la investigación minuciosa y la comunicación persistente para resolver los problemas. Este proyecto me ha dado la capacidad para tomar decisiones técnicas y gestionar un proyecto completo de software.
+
+\section{Trabajo a futuro}
+El estado actual de \textit{PhenoScore} representa una base sólida y funcional, pero también un punto de partida con un gran espacio para el desarrollo. Las siguientes líneas de trabajo futuro podrían llevar a la evolución de la plataforma a una solución más sólida y completa y estar lista para un uso a mayor escala.
+
+\subsubsection{Despliegue y pruebas de rendimiento en un entorno de producción}
+El siguiente paso más importante consiste en el despliegue de la aplicación en un entorno de producción accesible públicamente. Esto  permite realizar pruebas reales de rendimiento de la aplicación y, a su vez, terminar con la validación de todos los requisitos no funcionales. Una vez desplegada, se podría ejecutar la auditoría de \textit{Google Lighthouse} para obtener métricas en aspectos como rendimiento, accesibilidad, buenas prácticas, o también pruebas de carga para evaluar cómo responde el sistema ante la concurrencia de varios usuarios.
+
+\subsubsection{Implementación de una solución para la ejecución concurrente}
+Durante la validación se ha constatado que la limitación principal de la parte de análisis es no poder ejecutarlos de forma concurrente debido a las limitaciones de \textit{Snakemake}. La siguiente fase de trabajo tendría que centrarse en solucionar este problema. La forma más viable sería el aislamiento completo del entorno de ejecución de cada trabajo. Así, al comenzar un nuevo análisis, el \textit{worker} no sólo generaría los ficheros de configuración, sino que haría también una copia propia y aislada del \textit{pipeline} de \textit{GenoPred} en un directorio temporal. De esta manera, la cola de trabajos podría tener en paralelo muchos análisis en paralelo y se podría mejorar mucho la velocidad y la escalabilidad del sistema.
+
+\subsubsection{Gestión centralizada de pacientes y poblaciones de referencia}
+Actualmente, la plataforma requiere que el usuario suba los datos genómicos del paciente cada vez que se crea un nuevo análisis. Para mejorar la eficiencia y la usabilidad, una línea de trabajo futuro clave es la creación de un módulo de gestión de pacientes. Esto permitiría a los usuarios almacenar de forma segura y centralizada la información de sus cohortes de pacientes, pudiendo seleccionar un paciente existente al crear un nuevo análisis en lugar de subir sus datos repetidamente.
+
+Del mismo modo, se podría desarrollar una funcionalidad para que usuarios o administradores suban y gestionen poblaciones de referencia personalizadas. De momento no se ha podido desarrollar esta tarea por no disponer del suficiente recurso computacional para almacenar y procesar estos enormes conjuntos de datos. Habilitar esta opción permitiría a los investigadores usar sus propias cohortes de referencia y ser más versátiles y precisas sus ejecuciones de los análisis.
+
+\subsubsection{Creación de documentación y tutoriales para usuarios}
+Para facilitar la adopción de la plataforma por parte de nuevos usuarios, es fundamental desarrollar una sección de documentación y tutoriales interactivos. Esta sección podría incluir:
+\begin{itemize}
+\item Un manual de usuario que explique detalladamente cada funcionalidad de la plataforma.
+\item Videotutoriales que guíen a los usuarios a través del proceso completo de creación y ejecución de un análisis.
+\item Una sección de Preguntas Frecuentes (FAQ) para resolver las dudas más comunes.
+\end{itemize}
+Una buena documentación es necesaria para asegurar que los usuarios, especialmente los no técnicos, puedan sacar el máximo provecho de la herramienta de forma autónoma.
+
+\subsubsection{Pruebas de Concurrencia y Escalabilidad a Gran Escala}
+Uno de los mayores potenciales de mejora para \textit{PhenoScore} es la implementación de la ejecución concurrente de análisis. Durante el desarrollo, se identificó que la herramienta externa \textit{Snakemake} presenta una limitación que impide ejecuciones paralelas en el mismo directorio.
+
+La siguiente fase de trabajo debería centrarse en implementar la solución de aislamiento de directorios ya diseñada conceptualmente. Al hacer que el \textit{worker} cree una copia temporal y aislada del \textit{pipeline} para cada trabajo, la cola podría procesar múltiples análisis en paralelo. Esta mejora transformaría el rendimiento \textit{throughput} del sistema, siendo un paso indispensable para su escalabilidad y su uso en entornos con múltiples usuarios.
+
+
+\section{Relación del trabajo con los estudios cursados}
+
+El desarrollo del presente TFG ha supuesto la materialización práctica de la transversalidad de las competencias adquiridas a lo largo del Grado en Ingeniería Informática, al no tratarse de un desarrollo aislado, sino de un sistema caracterizado por la multidisciplinariedad.
+
+A continuación, se detalla la relación del trabajo con las principales áreas de conocimiento del grado.
+
+\paragraph{Ingeniería del Software, Análisis de Requisitos y Validación}
+
+En general, el proyecto se ha llevado a cabo siguiendo un proceso de ingeniería del software con un alto nivel de rigor a la hora de aplicar los fundamentos aprendidos en la especialización directamente al conjunto de fases, actividades y tareas realizadas. El uso de la metodología de la Ciencia del Diseño ha permitido una aplicación sistemática de las fases del ciclo de vida del software mencionadas anteriormente a lo largo de la etapa, que abarcan desde su concepción hasta la de los procesos que las finalizan, logrando una integración de las competencias de asignaturas como:
+
+\begin{itemize}
+\item La asignatura de Ingeniería del Software ha proporcionado la base metodológica para estructurar todo el proyecto. Conceptos como el ciclo de vida, la gestión de la configuración y la importancia de seguir un proceso definido han sido la estructura del trabajo, asegurando que cada fase (análisis, diseño, implementación, validación) se abordara de forma ordenada y coherente.
+
+\item A partir de esta base, se han aplicado las técnicas de la asignatura Análisis y Especificación de Requisitos. Lo cual, se ha materializado en la obtención de las necesidades del usuario mediante historias de usuario y su posterior traducción a requisitos funcionales y no funcionales detallados. Asimismo, se ha realizado el modelado conceptual del sistema utilizando un conjunto completo de diagramas UML (Clases, Secuencia, Componentes, Despliegue), una competencia central en esta materia que ha sido clave para definir la estructura y el comportamiento de la solución antes de su implementación.
+
+\item Finalmente, la asignatura Análisis, Validación y Depuración de Software ha guiado la última fase del proyecto. El capítulo de Validación se basa directamente en los principios para asegurar la calidad del producto. Se ha planificado y ejecutado un proceso de validación que incluye la verificación de la funcionalidad mediante un guion de tareas guiadas, la medición de requisitos no funcionales de rendimiento y la evaluación de la aceptación del usuario con el modelo TAM. Este enfoque demuestra la capacidad para diseñar y ejecutar un plan de pruebas que asegure que el software no solo funciona, sino que también cumple con los estándares de calidad definidos.
+
+\end{itemize}
+
+\paragraph{Diseño de Software.}
+Uno de los pilares del TFG ha sido el diseño de una arquitectura de software moderna y compleja, un desafío central en la Ingeniería del Software. Se han aplicado directamente conceptos de la asignatura Diseño de Software, como la arquitectura por capas (Presentación, Lógica de Negocio y Persistencia) para garantizar la separación de responsabilidades y la mantenibilidad. 
+Más allá de esta estructura, se han implementado varios patrones de diseño y buenas prácticas para resolver problemas específico, como: 
+
+\begin{itemize}
+    \item El patrón de cola de trabajos, para gestionar la ejecución de los análisis PRS: que son tareas de larga duración, se ha implementado este patrón utilizando \textit{BullMQ} y \textit{Redis}. Esto desacopla la petición del usuario de la ejecución real, evitando el bloqueo de la interfaz y mejorando la escalabilidad y la resiliencia del sistema.
+    \item Principio de Responsabilidad Única: Este principio de diseño \textit{SOLID} \cite{martin} se ha aplicado al separar la lógica del \textit{AutoWorker} (cuya única responsabilidad es gestionar la cola) de la del \textit{AnalysisProcessor} (cuya única responsabilidad es ejecutar un análisis). Esta separación ha hecho el código mucho más limpio, mantenible y fácil de depurar.
+\end{itemize}
+
+\paragraph{Bases de Datos y Persistencia de la Información.}
+Por otra parte, el proyecto ha requerido que se apliquen de manera directa y avanzada los conceptos de persistencia de datos, cuya formación básica ha sido la impartida en la asignatura de Bases de Datos y sistemas de información. En particular, la asignatura presentada anteriormente ha asentado las bases del conocimiento acerca del modelo relacional y de SQL, y ha permitido abordar con éxito el diseño e implementación de \textit{PhenoScore}.
+
+\begin{itemize}
+\item Diseño Relacional: El esquema de datos relacional, complejo, normalizado y optimizado para la plataforma ha sido diseñado e implementado en un servidor \textit{MariaDB}. Este proceso de modelado ha evolucionado desde un esquema de clases conceptual a un diagrama de entidad-relación físico y es una implementación directa de las habilidades de diseño de bases de datos.
+
+\item Gestión y Consulta: Para la interacción con la base de datos, se ha utilizado un \textit{ORM} moderno como \textit{Prisma}. Aunque esta herramienta abstrae la escritura de SQL directo, la capacidad para construir consultas seguras y eficientes, así como para gestionar las migraciones del esquema, se fundamenta en la comprensión del modelo relacional y de cómo funcionan las operaciones subyacentes.
+
+\item Bases de Datos \textit{NoSQL}: Adicionalmente, se ha utilizado una base de datos en memoria clave-valor como \textit{Redis} para una tarea de alta velocidad, en este caso, la gestión de la cola de trabajos. De esta manera uno puede ver cómo abordar más allá del modelo relacional y elegir la tecnología de persistencia más adecuada para cada requisito específico del sistema, un concepto avanzado en la gestión de la información.
+\end{itemize}
+
+\paragraph{Sistemas Operativos y Concurrencia.}
+La funcionalidad central del proyecto, la ejecución asíncrona de análisis, es una aplicación directa de los conceptos fundamentales estudiados en asignaturas como Sistemas Operativos y Concurrencia. El conocimiento teórico adquirido con respecto de la gestión de procesos, su ciclo de vida y la comunicación entre los mismos, ha sido indispensable para poder diseñar la arquitectura del \textit{worker}.
+
+Gracias a esta base conceptual, fue posible implementar la ejecución de \textit{GenoPred} como un proceso externo utilizando el módulo \textit{child\_process} de \textit{Node.js}, comprendiendo los mecanismos subyacentes de creación y monitorización de procesos que el sistema operativo gestiona.
+
+En conclusión, este TFG es un reflejo de la formación recibida a lo largo del grado en un proyecto integrador en el que se han puesto en práctica las competencias adquiridas en las principales áreas de la informática de manera integrada para desarrollar una solución \textit{software} de un cierto nivel de complejidad.

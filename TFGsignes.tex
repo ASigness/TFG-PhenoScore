@@ -1,0 +1,150 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                       CARREGA DE LA CLASSE DE DOCUMENT                      %
+%                                                                             %
+% Les opcions admissibles son:                                                %
+%      12pt / 11pt            (cos dels tipus de lletra; no feu servir 10pt)  %
+%                                                                             %
+% catalan/spanish/english     (llengua principal del treball)                 %
+%                                                                             % 
+% french/italian/german...    (si necessiteu fer servir alguna altra llengua) %
+%                                                                             %
+% listoffigures               (El document inclou un Index de figures)        %
+% listoftables                (El document inclou un Index de taules)         %
+% listofquadres               (El document inclou un Index de quadres)        %
+% listofalgorithms            (El document inclou un Index d'algorismes)      %
+%                                                                             %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\documentclass[11pt,spanish,listoffigures,listoftables]{tfgetsinf}
+
+\usepackage{booktabs}
+\usepackage{longtable}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                     CODIFICACIO DEL FITXER FONT                             %
+%                                                                             %
+%    windows fa servir normalment 'ansinew'                                   %
+%    amb linux es possible que siga 'latin1' o 'latin9'                       %
+%    Pero el mes recomanable es fer servir utf8 (unicode 8)                   %
+%                                          (si el vostre editor ho permet)    % 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\usepackage[utf8]{inputenc} 
+\usepackage{xcolor}
+\usepackage{float}
+\usepackage{graphicx}
+\usepackage{pifont}
+\usepackage{tabularx}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{ltxtable}
+\usepackage{array}
+\usepackage{tikz}
+\usepackage{graphics}
+\usepackage{fancyhdr}
+\usetikzlibrary{positioning, shapes, arrows.meta}
+\usepackage{enumitem}
+\usepackage{pdfpages}
+\newcommand{\cmark}{\ding{51}} % ✓
+\newcommand{\xmark}{\ding{55}} % ✗
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Para conseguir que la tabla de contenido no salga en rojo
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\hypersetup{ colorlinks=true, linkcolor=black, urlcolor=cyan, }
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                        ALTRES PAQUETS I DEFINICIONS                         %
+%                                                                             %
+% Carregueu aci els paquets que necessiteu i declareu les comandes i entorns  %
+%                                          (aquesta seccio pot ser buida)     %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                        DADES DEL TREBALL                                    %
+%                                                                             %
+% titol, alumne, tutor i curs academic                                        %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\title{Diseño y desarrollo de una Plataforma para facilitar el \\
+      Análisis de Puntuaciones de Riesgo Poligénico} 
+\author{Àngela Signes Bolufer}
+\tutor{Alberto García Simón\\
+        Diana Martínez Minguet\\
+      Oscar Pastor López}
+\curs{2024-2025}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                     PARAULES CLAU/PALABRAS CLAVE/KEY WORDS                  %
+%                                                                             %
+% Independentment de la llengua del treball, s'hi han d'incloure              %
+% les paraules clau i el resum en els tres idiomes                            %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\keywords{Genòmica, Puntuacions de Risc Poligènic, Plataforma web, Medicina de precisió}
+         % Paraules clau 
+         {Genómica, Puntuaciones de Riesgo Poligénico, Plataforma web, Medicina de precisión} %Palabras clave
+         {Genomics, Polygenic Risk Scores, Web platform, Precision medicine}
+         % Key words
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                              INICI DEL DOCUMENT                             %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%              RESUMS DEL TFG EN VALENCIA, CASTELLA I ANGLES                  %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\input{partes/resumen.tex}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                              CONTINGUT DEL TREBALL                          %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\mainmatter
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                  INTRODUCCIO                                %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\input{capitulos/1-Introducción/cap1_introducción.tex}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                         CAPITOLS (tants com calga)                          %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\input{capitulos/2-Investigación del problema/cap2_investigación}
+\input{capitulos/3-Diseño de la solución/cap3_diseño_de_la_solución}
+\input{capitulos/4-Validación de la solución/cap4_validación_de_la_solución}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                 CONCLUSIONS                                 %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\input{capitulos/5-Conclusiones/cap5_conclusiones}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                BIBLIOGRAFIA                                 %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\input{partes/bibliografia.tex}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                           APÈNDIXS  (Si n'hi ha!)                           %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\APPENDIX
+\chapter{Anexo: Objetivos de Desarrollo Sostenible}
+\includepdf[pages=-, pagecommand={}]{partes/Anexo_ODS_TFG.pdf}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                              FI DEL DOCUMENT                                %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\end{document}

@@ -1,0 +1,126 @@
+\chapter{Investigación del problema}
+\label{chap:investigación}
+
+\section{Fundamentos de las puntuaciones de riesgo poligénico}
+
+Las Puntuaciones de Riesgo Poligénico (PRS) son una métrica que cuantifica la predisposición genética de un individuo a un rasgo o enfermedad, basándose en la suma de los efectos de múltiples variantes genéticas. Para comprender su construcción y aplicación, es fundamental entender los conceptos genéticos y estadísticos en los que se basan. Esta sección da respuesta a la primera pregunta de investigación: ¿Cuál es la base de genética que sustentan los análisis PRS?
+
+El material de partida para cualquier PRS son los resultados de los Estudios de Asociación del Genoma Completo (GWAS, del inglés \textit{Genome Wide Association Study}) \cite{babb, uffelmann}. Estos estudios a gran escala analizan los genomas de miles de individuos para identificar Polimorfismos de un Solo Nucleótido (SNPs, del inglés \textit{Single Nucleotide Polymorphism}) \cite{choi} que están estadísticamente asociados con una enfermedad. Para cada SNP que supera un umbral de significancia estadística, el GWAS proporciona un tamaño del efecto ($\beta_j$), que refleja la magnitud de su asociación con la patología. Estos tamaños de efecto se convierten en los pesos que se utilizarán como parámetros en el modelo PRS.
+
+La construcción de un modelo PRS a partir de los datos brutos de un GWAS es un proceso bioinformático complejo que va más allá de una simple suma. Antes de aplicar la fórmula, se deben realizar varios pasos metodológicos cruciales para asegurar la validez del modelo, como la selección de SNPs mediante un umbral de p-valor (\textit{p-value thresholding}) y la poda de variantes en desequilibrio de ligamiento (\textit{LD clumping}). 
+
+Este último paso es esencial, ya que el desequilibrio de ligamiento se refiere al fenómeno por el cual variantes genéticas que están físicamente cercanas en un cromosoma tienden a heredarse juntas. La poda, por tanto, elimina las variantes redundantes, asegurando que los SNPs incluidos en el modelo sean en gran medida independientes entre sí y evitando así una sobreestimación del riesgo \cite{lambert2019}.
+
+Una vez se dispone del conjunto final de SNPs y sus pesos, la puntuación para un individuo $i$ se calcula mediante un modelo de regresión lineal aditivo:
+$$PRS_i = \sum_{j=1}^{n}  G_{ij} \, \beta_j$$ donde $\beta_j$ representa el efecto de cada variante, $G_{ij}$ el número de copias de la variante que posee el individuo \footnote{El valor puede ser 0, 1 o 2. Esto se debe a que los seres humanos heredan dos copias de cada cromosoma, una de cada progenitor. Así, para un SNP concreto, un individuo puede no haber heredado ninguna copia del alelo de riesgo, haber heredado una o haber heredado ambas.}, y $n$ el número total de variantes asociadas \cite{choi, collister}. Al aplicar este modelo al genoma de un individuo, se obtiene un valor numérico que estima su predisposición genética.
+
+El valor bruto de un PRS no es directamente interpretable. Para obtener un significado clínico, debe ser contextualizado comparándolo con las puntuaciones de una gran población de referencia, lo que permite situar al individuo en un percentil de riesgo relativo (ej. ''en el 5\% superior de riesgo genético'') \cite{maamari, corpas}.
+
+La principal utilidad clínica del PRS es la estratificación del riesgo para la medicina preventiva. Un ejemplo de alto impacto es en las enfermedades cardiovasculares. Un individuo puede tener factores de riesgo tradicionales (colesterol, presión arterial) en un rango intermedio, pero un PRS elevado puede reclasificarlo a una categoría de alto riesgo, justificando el inicio de un tratamiento preventivo (como estatinas) mucho antes de lo que se haría de otra manera \cite{knowles}. De este modo, el PRS no reemplaza los factores de riesgo clásicos, sino que los complementa, añadiendo una nueva capa de información para una toma de decisiones más precisa \cite{terkelsen}.
+
+A pesar de su gran potencial, la implementación clínica de los PRS enfrenta desafíos significativos. Uno de los más importantes es la portabilidad entre diferentes poblaciones ancestrales. La gran mayoría de los GWAS se han realizado en individuos de ascendencia europea, lo que significa que los modelos PRS derivados de ellos son significativamente menos precisos cuando se aplican a individuos de ascendencia africana, asiática u otras. Esta falta de diversidad en los datos de entrenamiento es una barrera crítica para una implementación equitativa de la genómica en la salud \cite{torkamani2018}.
+
+Además, la comunicación de un riesgo probabilístico y genético a los pacientes es un desafío en sí mismo, requiriendo un asesoramiento genético cuidadoso para evitar el determinismo genético y la ansiedad innecesaria \cite{alliance}. 
+
+En conclusión, los análisis de PRS representan un avance fundamental en la medicina genómica. Aunque su implementación a gran escala aún enfrenta retos metodológicos y éticos, su potencial para guiar intervenciones preventivas y personalizar el tratamiento es innegable, marcando el camino hacia una práctica clínica más proactiva y precisa \cite{wray}.
+
+
+\section{Estado del arte}
+Como se ha mencionado en la introducción, los \textit{Polygenic Risk Scores} (PRS) se han convertido en una herramienta prometedora en la medicina de precisión al permitir estimar el riesgo genético de un individuo para desarrollar enfermedades complejas. Los PRS representan un avance significativo respecto a los enfoques tradicionales que se centraban en el estudio de enfermedades simples, donde la causa de la enfermedad radica en una única variante.
+
+Para realizar un análisis de PRS se requiere un modelo PRS para la enfermedad de estudio y los datos genómicos del individuo de interés. Hay múltiples pasos involucrados en el proceso completo, algunos de esos pasos y las herramientas que se usan en ellos se pueden observar en la siguiente tabla:
+
+\begin{table}[H]
+    \centering
+    \small
+    \begin{tabularx}{\textwidth}{ >{\raggedright\arraybackslash}X >{\raggedright\arraybackslash}X >{\raggedright\arraybackslash}X }
+        \toprule
+        \textbf{Paso del Proceso} & \textbf{Herramienta(s) Utilizada(s)} & \textbf{Referencias} \\
+        \midrule
+        Control de calidad de los \textit{datasets} y variaciones & 
+        • \texttt{PLINK} (es el estándar para el filtrado estadístico). \newline 
+        • \texttt{BCFtools} (muy potente para la manipulación y filtrado de ficheros \textit{VCF}). 
+        & \texttt{PLINK} \textit{QC Manual}, \texttt{BCFtools} \textit{Documentation}
+        \\ \addlinespace
+
+        Alineamiento entre datos del paciente y del modelo & 
+        \texttt{PLINK} (se usa para armonizar los \textit{datasets}, asegurando que las variantes coincidan). 
+        & \texttt{PLINK} \textit{PCA Tutorial}
+        \\ \addlinespace
+
+        Estimación y ajuste de ancestría del paciente & 
+        \texttt{PLINK} (se utiliza para realizar el Análisis de Componentes Principales o PCA). 
+        & \textit{AncestryCheck} with \texttt{plinkQC}
+        \\ \addlinespace
+
+        Preparación de la población de referencia &  
+        • \texttt{PLINK} y \texttt{BCFtools} (para el control de calidad). \newline 
+        • \texttt{bgenix} (para indexar y acceder a datos masivos). 
+        & \textit{BGEN Documentation}, \textit{BGENIX Documentation}
+        \\ \addlinespace
+
+        Creación del Modelo PRS y Cálculo de la Puntuación & 
+        • \texttt{PRSice2} (implementa el método de ''\textit{Clumping + Thresholding}''). \newline 
+        • \texttt{LDpred2} (implementa un método Bayesiano más avanzado). 
+        & \texttt{PRSice-2}: \textit{Polygenic Risk Score software}, \texttt{LDpred2}: \textit{better, faster, stronger}
+        \\
+        \bottomrule
+    \end{tabularx}
+    \caption{Pasos, herramientas y referencias en el análisis PRS.}
+    \label{tab:prs_workflow}
+\end{table}
+
+Como resultado, para poder ejecutar un análisis de PRS se deben combinar múltiples herramientas informáticas.
+
+Es por ello que la aplicación de análisis PRS en entornos clínicos se enfrenta a una barrera fundamental: la alta complejidad y fragmentación del proceso. Como se ha mencionado, un análisis completo requiere una secuencia de pasos bien definidos y cada una de estas tareas suele ser ejecutada por herramientas informáticas especializadas y potentes, como \texttt{PLINK} o \texttt{BCFtools}. 
+
+El primer problema radica en que la integración y orquestación manual de estas herramientas exige un conocimiento técnico avanzado en bioinformática, creando un flujo de trabajo fragmentado que resulta inaccesible para la mayoría de los investigadores clínicos. Debido a esta limitación, el paso lógico es buscar soluciones que ya integren estos pasos en un único \textit{pipeline} automatizado. 
+
+Sin embargo, esto lleva a un segundo problema: la mayoría de estas soluciones carecen de una interfaz de usuario (\textit{UI}) intuitiva y funcionan a través de la línea de comandos. Esta es la complejidad que este trabajo pretende simplificar: no solo integrar el flujo de trabajo, sino también presentarlo a través de una interfaz accesible que elimine la barrera tecnológica para el usuario final.
+
+Dado que el objetivo de este trabajo es facilitar la ejecución de análisis PRS para usuarios no expertos, se han investigado herramientas que integran \textit{software} existentes y automatizan muchos de los complejos pasos y decisiones de análisis.
+Las principales herramientas para ejecutar análisis de PRS son las siguientes:
+
+\begin{itemize}
+   \item
+    \texttt{pgsc\_calc} (\textit{Polygenic Score Catalog Calculator}) \cite{lambert2024}: se trata de un \textit{pipeline} \texttt{Nextflow} oficial del repositorio \textit{PGS Catalog}, diseñado exclusivamente para realizar análisis de PRS usando modelos existentes en el repositorio, o personalizados. Automatiza el proceso de descargar modelos de \textit{PGS Catalog} y aplicarlos a datos genéticos, en formato \textit{VCF}, \texttt{PLINK1} o \texttt{PLINK2}. \footnote{\textit{VCF (Variant Call Format)} es un formato de texto estándar para almacenar variaciones genéticas. \texttt{PLINK1} y \texttt{PLINK2} son los formatos nativos del \textit{software} \texttt{PLINK}, que utilizan un conjunto de archivos binarios (\texttt{.bed}, \texttt{.bim}, \texttt{.fam}) para una gestión eficiente de grandes \textit{datasets} genómicos.}. Genera como resultado un reporte resumen con los resultados del análisis, detalles del modelo aplicado y parámetros relevantes del proceso. 
+    %El problema con este pipeline es su complejidad, además no tiene interfaz gráfica, se opera por consola y el reporte resultante es estático.
+    
+    \item
+    \texttt{GenoPred} \textit{pipeline} \cite{pain2024}: se trata de un \textit{pipeline} escalable de \texttt{Snakemake} para generar y aplicar modelos PRS sobre datos genómicos, en varios formatos: \texttt{PLINK1}, \texttt{PLINK2}, \textit{VCF}, \textit{BGEN}, y \textit{23andMe}. Al igual que \texttt{pgsc\_calc}, permite realizar los análisis de PRS a partir de modelos PRS existentes, procedentes de repositorios de modelos como \textit{PGS Catalog} u otros. Sin embargo, además permite crear modelos PRS para seguidamente aplicarlos, ya que la herramienta ha sido desarrollada para facilitar la generación de modelos PRS empleando distintos \textit{softwares}. La salida principal de esta herramienta son archivos \textit{HTML} con resultados de análisis PRS y reportes técnicos. Además de la obtención del reporte de análisis, permite obtener cáculos intermedios de interés, como control de calidad o estimación de ancestrías de los datos de entrada.
+    %%Sin embargo, es una herramienta  compleja ya que no dispone de interfaz y su uso es por línea de comandos. La instalación y uso de snakemake o conda puede ser un reto para los usuarios no expertos. 
+     
+    \item
+     \texttt{PGS Calculator} (\texttt{pgs-calc} de Lukasz) \cite{lukfor_pgscalc}: es una herramienta de línea de comandos para aplicar modelos PRS a datos genómicos en formato \textit{VCF}. Se conecta a \textit{PGS Catalog} para descargar automáticamente los archivos de puntuación de los modelos o también permite cargar archivos de modelos PRS propios, pero no la creación de nuevos modelos. La salida es un \textit{HTML} interactivo con gráficos de distribución de PGS. 
+     %Como en casos anteriores, no dispone de interfaz gráfica fuera del terminal y requiere línea de comandos. 
+
+    \item
+    \texttt{PRS Pipeline tutorial} (Collister \& Liu) \cite{collister}: es un tutorial práctico que permite aplicar un modelo PRS existente a datos genómicos del repositorio \textit{UK Biobank}. No es exactamente una herramienta integrada, pero ilustra todo el flujo desde la extracción de SNPs hasta el cálculo de PRS siguiendo un ejemplo concreto. 
+    %Su mayor limitación es que no permite la ejecucuión de un análisis para un único individuo, ya que está orientada a los datos de UK Biobank.
+    
+\end{itemize}
+
+\section{Principales barreras y limitaciones}
+
+La mayor utilidad de estas herramientas es que integran todos los pasos necesarios para ejecutar un análisis PRS completo. Sin embargo, su principal limitación es que no disponen de una interfaz que permita configurar fácilmente los análisis de PRS. El uso por línea de comandos, así como la instalación y el uso de herramientas de orquestación de \textit{workflows} (\texttt{snakemake} o \texttt{nextflow}) y gestores de entornos de ejecución virtuales (\texttt{conda}), supone un reto para los usuarios no expertos.  Adicionalmente, el ``\texttt{PRS Pipeline tutorial}'' tiene la limitación específica de no ser apto para análisis de individuos únicos, ya que está orientado a conjuntos de datos a gran escala como los de \textit{UK Biobank}. 
+
+\begin{table}[H]
+    \centering
+    \small
+    \label{tab:prs_tool_limitations}
+    \begin{tabularx}{\textwidth}{ >{\raggedright\arraybackslash}X >{\centering\arraybackslash}X >{\centering\arraybackslash}X >{\centering\arraybackslash}X >{\centering\arraybackslash}X }
+        \toprule
+        \textbf{Herramienta} & \textbf{Falta de Interfaz Gráfica (\textit{CLI})} & \textbf{Requiere Conocimiento Técnico Avanzado} & \textbf{Solo Aplica Modelos Existentes (No Creación)} & \textbf{No Apto para Análisis Individual} \\
+        \midrule
+        \texttt{pgsc\_calc} & Sí & Sí (\texttt{Nextflow}) & Sí & No \\ \addlinespace
+        \texttt{GenoPred} \textit{pipeline} & Sí & Sí (\texttt{Snakemake}, \texttt{Conda}) & No & No \\ \addlinespace
+        \texttt{PGS Calculator} & Sí & Sí (\textit{CLI}) & Sí & No \\ \addlinespace
+        \texttt{PRS Pipeline tutorial} & Sí & Sí (Tutorial práctico) & Sí & Sí \\
+        \bottomrule
+    \end{tabularx}
+    \caption{Limitaciones clave de las herramientas para análisis de PRS.}
+\end{table}
+
+El análisis PRS para predecir la predisposición genética a enfermedades complejas se ve significativamente limitado por su inherente complejidad técnica. El proceso, que abarca desde la descarga y preprocesamiento de datos genéticos hasta la ejecución de flujos de trabajo específicos para el cálculo y la interpretación de resultados, requiere un dominio avanzado de herramientas bioinformáticas y conocimientos especializados. Estas barreras técnicas restringen considerablemente el acceso y la adopción de los PRS por parte de investigadores con menor experiencia en bioinformática y profesionales del ámbito clínico.
+
+A partir del estudio del estado del arte, se han identificado problemas recurrentes en las soluciones actuales: una elevada complejidad que dificulta el acceso y aprovechamiento, una fragmentación de funcionalidades que obliga al uso de múltiples plataformas, y la entrega de resultados en formatos planos que carecen de visualizaciones intuitivas para una rápida interpretación. Estos desafíos recalcan la necesidad de una innovación que centralice el proceso en una única herramienta, ofreciendo una experiencia más amigable y accesible que integre todas las fases del análisis PRS, desde la carga de datos genéticos hasta la interpretación visual de los resultados.
